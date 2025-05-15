@@ -9,6 +9,7 @@ Usage:
 """
 
 import os
+from parse_md import extract_inline_fields
 
 def main():
     """
@@ -28,18 +29,11 @@ def main():
         "budget-2025.md"
     )
     full_path = os.path.expanduser(icloud_path)
-    print(f"Trying to open: {full_path}")
     if not os.path.exists(full_path):
         print("File does not exist.")
         return
-    try:
-        with open(full_path, "r", encoding="utf-8") as f:
-            data = f.read()
-            print(data)
-    except FileNotFoundError as e:
-        print(f"File not found: {e}")
-    except IOError as e:
-        print(f"IO error opening file: {e}")
+    fields = extract_inline_fields(full_path)
+    print(fields)
 
 
 if __name__ == "__main__":
