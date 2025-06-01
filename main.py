@@ -5,21 +5,13 @@ A command-line application to track expenses, view them, and generate statistics
 
 import os
 import sys
-from pathlib import Path
 
 # internal imports
 import db_handler
-import tracker
+import ops
 import user_input as ui
 
-# Constants
-# OS	| Path.home() points to
-# ------|----------------------
-# Linux	| /home/username
-# macOS	| /Users/username
-# Windows | C:\Users\username
-homedir = Path.home()
-EXPENSE_DB = homedir/"expenses.db"
+from config import EXPENSE_DB
 
 
 def main():
@@ -35,11 +27,11 @@ def main():
         sys.exit(error.code)
 
     if args.command == "add":
-        tracker.add_expense()
+        ops.add_expense()
+    elif args.command == "delete":
+        ops.delete_expense(args)
     elif args.command == "view":
-        tracker.view_expenses(args)
-    elif args.command == "stats":
-        tracker.stats_graph(args)
+        ops.view_expenses(args)
 
 
 if __name__ == "__main__":

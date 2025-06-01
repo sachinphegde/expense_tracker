@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 A simple command-line spend tracker application.
 """
-import argparse
-import os
-import sys
+
 import sqlite3
 import datetime
 import calendar
-from pathlib import Path
-import matplotlib
+
+# internal imports
+from config import EXPENSE_DB
 
 
 def add_expense():
@@ -50,30 +46,6 @@ def add_expense():
         print("Expsense added.\n")
 
 
-def get_expense_sum():
-    """
-    Calculates the total sum of expenses in the database.
-    """
-    conn = sqlite3.connect(EXPENSE_DB)
-    cursor = conn.cursor()
-    cursor.execute("SELECT SUM(amount) FROM expenses")
-    total_sum = cursor.fetchone()[0]
-    conn.close()
-    return total_sum if total_sum is not None else 0.0
-
-
-def view_expenses(args):
-    """
-    Views all expenses in the database.
-    """
-    conn = sqlite3.connect(EXPENSE_DB)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM expenses WHERE date = ?", (date_str,))
-
-    conn.commit()
-    conn.close()
-
-
 def delete_expense(args):
     """
     Deletes an expense from the database.
@@ -97,17 +69,3 @@ def delete_expense(args):
         print("Expense not found.")
     conn.commit()
     conn.close()
-
-
-def stats_graph(args):
-    """
-    Generates statistics or a graph based on the expenses.
-    """
-    conn = sqlite3.connect(EXPENSE_DB)
-    cursor = conn.cursor()
-
-    conn.commit()
-    conn.close()
-
-
-
