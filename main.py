@@ -9,7 +9,7 @@ Usage:
 """
 
 import os
-from parse_md import extract_inline_fields
+import expense_tracker.extract_expense.parse_md as pm
 
 def main():
     """
@@ -18,7 +18,7 @@ def main():
     The function constructs the file path, checks for the file's existence, and prints its contents.
     If the file does not exist or cannot be opened, it prints an appropriate error message.
     """
-    icloud_path = os.path.join(
+    icloud_path_1 = os.path.join(
         "~",
         "Library",
         "Mobile Documents",
@@ -28,11 +28,23 @@ def main():
         "2025",
         "budget-2025.md"
     )
+
+    icloud_path = os.path.join(
+        "~",
+        "Library",
+        "Mobile Documents",
+        "iCloud~md~obsidian",
+        "Documents",
+        "FinancePlans",
+        "2025",
+        "Spendings",
+        "May.md"
+    )
     full_path = os.path.expanduser(icloud_path)
     if not os.path.exists(full_path):
         print("File does not exist.")
         return
-    fields = extract_inline_fields(full_path)
+    fields = pm.extract_items_with_dates(full_path)
     print(fields)
 
 
