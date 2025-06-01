@@ -1,51 +1,45 @@
 """
-Main script for accessing and reading a finance budget file stored in an iCloud-synced Obsidian vault.
-
-This script attempts to locate and open a markdown file containing budget information for the year 2025.
-It prints the contents of the file if found, or an error message if the file does not exist or cannot be opened.
-
-Usage:
-    python main.py
+Expense Tracker Application
+A command-line application to track expenses, view them, and generate statistics.
 """
 
 import os
-import expense_tracker.extract_expense.parse_md as pm
+import sys
+from pathlib import Path
+
+# internal imports
+import db_handler
+import tracker
+import user_input as ui
+
+# Constants
+# OS	| Path.home() points to
+# ------|----------------------
+# Linux	| /home/username
+# macOS	| /Users/username
+# Windows | C:\Users\username
+homedir = Path.home()
+EXPENSE_DB = homedir/"expenses.db"
+
 
 def main():
     """
-    Attempts to open and read a budget markdown file from an iCloud-synced Obsidian vault.
-
-    The function constructs the file path, checks for the file's existence, and prints its contents.
-    If the file does not exist or cannot be opened, it prints an appropriate error message.
+    Main function to run the spend tracker application.
     """
-    icloud_path_1 = os.path.join(
-        "~",
-        "Library",
-        "Mobile Documents",
-        "iCloud~md~obsidian",
-        "Documents",
-        "FinancePlans",
-        "2025",
-        "budget-2025.md"
-    )
+    if not os.path.exists(EXPENSE_DB):
+        db_handler.create_database(EXPENSE_DB)
 
-    icloud_path = os.path.join(
-        "~",
-        "Library",
-        "Mobile Documents",
-        "iCloud~md~obsidian",
-        "Documents",
-        "FinancePlans",
-        "2025",
-        "Spendings",
-        "May.md"
-    )
-    full_path = os.path.expanduser(icloud_path)
-    if not os.path.exists(full_path):
-        print("File does not exist.")
-        return
-    fields = pm.extract_items_with_dates(full_path)
-    print(fields)
+    try:
+        args = ui.get_user_args()
+    except SystemExit as error:
+        sys.exit(error.code)
+
+    if args.command == "add":
+        tracker.add_expense()
+    elif args.command == "view":
+        tracker.view_expenses(args)
+    elif args.command == "stats":
+        tracker.stats_graph(args)
 
 
 if __name__ == "__main__":
