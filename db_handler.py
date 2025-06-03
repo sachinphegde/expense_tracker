@@ -4,6 +4,11 @@ This module provides functions to manage the expenses database
 """
 
 import sqlite3
+import requests
+import base64
+import json
+from dotenv import load_dotenv
+import os
 
 
 def create_database(db_name):
@@ -44,3 +49,50 @@ def add_column_to_expenses(db_name, column_name, column_type):
         print(f"Column '{column_name}' already exists.")
     conn.commit()
     conn.close()
+
+
+def download_db_from_github(owner, repo, filepath, token, out_file="expenses.db"):
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{filepath}"
+    headers = {"Authorization": f"token {token}"}
+    r = requests.get(url, headers=headers)
+    r.raise_for_status()
+
+    download_url = r.json()["download_url"]
+    db_content = requests.get(download_url)
+    with open(out_file, "wb") as f:
+        f.write(db_content.content)
+
+    print(f"Downloaded database to {out_file}")
+
+
+def upload_db_to_github(owner, repo, filepath, token, local_file="expenses.db", commit_msg="Update DB"):
+    # Get SHA of existing file
+    get_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{filepath}"
+    headers = {"Authorization": f"token {token}"}
+    resp = requests.get(get_url, headers=headers)
+    resp.raise_for_status()
+
+    sha = resp.json()["sha"]
+
+    # Read and base64 encode the local DB
+    with open(local_file, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
+
+    # Prepare PUT payload
+    payload = {
+        "message": commit_msg,
+        "content": encoded,
+        "sha": sha,
+        "branch": "main"  # or your branch name
+    }
+
+    put_resp = requests.put(get_url, headers=headers, data=json.dumps(payload))
+    put_resp.raise_for_status()
+    print("Database updated in GitHub.")
+
+
+def get_github_token():
+    load_dotenv()  # Load .env into environment
+    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+    if not GITHUB_TOKEN:
+        raise ValueError("GitHub token not found in .env file!")
