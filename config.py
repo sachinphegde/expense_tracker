@@ -14,3 +14,5 @@ from pathlib import Path
 # Windows | C:\Users\username
 homedir = Path.home()
 EXPENSE_DB = homedir / "expenses.db"
+
+DATABASE_URL = "https://api.github.com/repos/sachinphegde/my_database/contents/Finance/expenses.db"
