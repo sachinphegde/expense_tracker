@@ -51,8 +51,8 @@ def add_column_to_expenses(db_name, column_name, column_type):
     conn.close()
 
 
-def download_db_from_github(owner, repo, filepath, token, out_file="expenses.db"):
-    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{filepath}"
+def download_db_from_github(token, out_file="expenses.db"):
+    url = DATABASE_URL
     headers = {"Authorization": f"token {token}"}
     r = requests.get(url, headers=headers)
     r.raise_for_status()
@@ -65,9 +65,9 @@ def download_db_from_github(owner, repo, filepath, token, out_file="expenses.db"
     print(f"Downloaded database to {out_file}")
 
 
-def upload_db_to_github(owner, repo, filepath, token, local_file="expenses.db", commit_msg="Update DB"):
+def upload_db_to_github(token, local_file="expenses.db", commit_msg="Update DB"):
     # Get SHA of existing file
-    get_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{filepath}"
+    url = DATABASE_URL
     headers = {"Authorization": f"token {token}"}
     resp = requests.get(get_url, headers=headers)
     resp.raise_for_status()
@@ -83,7 +83,7 @@ def upload_db_to_github(owner, repo, filepath, token, local_file="expenses.db", 
         "message": commit_msg,
         "content": encoded,
         "sha": sha,
-        "branch": "main"  # or your branch name
+        "branch": "master"
     }
 
     put_resp = requests.put(get_url, headers=headers, data=json.dumps(payload))
