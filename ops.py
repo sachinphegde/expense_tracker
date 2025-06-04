@@ -69,3 +69,25 @@ def delete_expense(args):
         print("Expense not found.")
     conn.commit()
     conn.close()
+
+
+def view_expenses():
+    """
+    Reads the expenses table from the SQLite database and prints it as a table in the CLI.
+    """
+    conn = sqlite3.connect(EXPENSE_DB)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, amount, category, date, description, month, year FROM expenses")
+    rows = cursor.fetchall()
+    conn.close()
+
+    if not rows:
+        print("No expenses found.")
+        return
+
+    # Print header
+    headers = ["ID", "Amount", "Category", "Date", "Description", "Month", "Year"]
+    print("{:<5} {:<10} {:<15} {:<12} {:<30} {:<10} {:<6}".format(*headers))
+    print("-" * 100)
+    for row in rows:
+        print("{:<5} {:<10} {:<15} {:<12} {:<30} {:<10} {:<6}".format(*[str(col) for col in row]))

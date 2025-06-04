@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Expense Tracker Application
 A command-line application to track expenses, view them, and generate statistics.
@@ -31,7 +33,7 @@ def main():
     elif args.command == "delete":
         ops.delete_expense(args)
     elif args.command == "view":
-        ops.view_expenses(args)
+        ops.view_expenses()
 
 
 if __name__ == "__main__":
