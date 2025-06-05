@@ -87,7 +87,7 @@ def view_expenses():
 
     # Print header
     headers = ["ID", "Amount", "Category", "Date", "Description", "Month", "Year"]
-    print("{:<5} {:<10} {:<15} {:<12} {:<30} {:<10} {:<6}".format(*headers))
+    print("{:<5} {:<10} {:<15} {:<12} {:<23} {:<10} {:<6}".format(*headers))
     print("-" * 100)
     for row in rows:
-        print("{:<5} {:<10} {:<15} {:<12} {:<30} {:<10} {:<6}".format(*[str(col) for col in row]))
+        print("{:<5} {:<10} {:<15} {:<12} {:<23} {:<10} {:<6}".format(*[str(col) for col in row]))
