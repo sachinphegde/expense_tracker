@@ -14,12 +14,14 @@ import ops
 import user_input as ui
 
 from config import EXPENSE_DB
+from db_handler import download_db_from_github, upload_db_to_github
 
 
 def main():
     """
     Main function to run the spend tracker application.
     """
+    download_db_from_github()
     if not os.path.exists(EXPENSE_DB):
         db_handler.create_database(EXPENSE_DB)
 
@@ -34,6 +36,8 @@ def main():
         ops.delete_expense(args)
     elif args.command == "view":
         ops.view_expenses()
+
+    upload_db_to_github(EXPENSE_DB)
 
 
 if __name__ == "__main__":
