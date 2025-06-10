@@ -6,13 +6,12 @@ This module provides functions to manage the expenses database
 import sqlite3
 import base64
 import json
-import os
 import requests
-from dotenv import load_dotenv
-from config import DATABASE_URL
+import os
+from config import GITHUB_TOKEN, DATABASE_URL, DB_PATH
 
 
-def create_database(db_name):
+def create_table(db_name):
     """
     Creates the database and the expenses table if it does not exist.
     """
@@ -52,28 +51,28 @@ def add_column_to_expenses(db_name, column_name, column_type):
     conn.close()
 
 
-def download_db_from_github(out_file="expenses.db"):
+def download_db_from_github():
     """
-    db downloader from GitHub
+    Downloads the database from GitHub into the specified path.
+    """
 
-    Args:
-        out_file (str, optional): Local file to save the downloaded database. Defaults to "expenses.db".
-    """
-    token = get_github_token()
-    url = DATABASE_URL
-    headers = {"Authorization": f"token {token}"}
-    r = requests.get(url, headers=headers, timeout=10)
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    r = requests.get(DATABASE_URL, headers=headers, timeout=10)
     r.raise_for_status()
 
     download_url = r.json()["download_url"]
     db_content = requests.get(download_url, timeout=10)
-    with open(out_file, "wb") as f:
+    with open(DB_PATH, "wb") as f:
         f.write(db_content.content)
 
-    print(f"Downloaded database to {out_file}")
+    print(f"Downloaded database to {DB_PATH}")
+
+    create_table(DB_PATH)
 
 
-def upload_db_to_github(local_file="expenses.db", commit_msg="Update DB"):
+def upload_db_to_github(commit_msg="Update DB"):
     """
     Uploads the local database file to GitHub.
 
@@ -83,16 +82,14 @@ def upload_db_to_github(local_file="expenses.db", commit_msg="Update DB"):
         commit_msg (str, optional): _description_. Defaults to "Update DB".
     """
     # Get SHA of existing file
-    token = get_github_token()
-    url = DATABASE_URL
-    headers = {"Authorization": f"token {token}"}
-    resp = requests.get(url, headers=headers, timeout=10)
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    resp = requests.get(DATABASE_URL, headers=headers, timeout=10)
     resp.raise_for_status()
 
     sha = resp.json()["sha"]
 
     # Read and base64 encode the local DB
-    with open(local_file, "rb") as f:
+    with open(DB_PATH, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
 
     # Prepare PUT payload
@@ -103,17 +100,6 @@ def upload_db_to_github(local_file="expenses.db", commit_msg="Update DB"):
         "branch": "master"
     }
 
-    put_resp = requests.put(url, headers=headers, data=json.dumps(payload), timeout=10)
+    put_resp = requests.put(DATABASE_URL, headers=headers, data=json.dumps(payload), timeout=10)
     put_resp.raise_for_status()
     print("Database updated in GitHub.")
-
-
-def get_github_token():
-    """
-    Retrieves the GitHub token from the .env file.
-    """
-    load_dotenv()  # Load .env into environment
-    github_token = os.getenv("GITHUB_TOKEN")
-    if not github_token:
-        raise ValueError("GitHub token not found in .env file!")
-    return github_token
