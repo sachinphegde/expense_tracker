@@ -22,9 +22,16 @@ def add_expense():
     ex_month = calendar.month_name[int(ex_month)]
 
     while True:
-        amount = input("Amount (or 'q' to quit): ").strip()
-        if amount == 'q':
-            break
+        while True:
+            amount = input("Amount (or 'q' to quit): ").strip()
+            if amount == 'q':
+                print("Exiting expense addition.")
+                return
+            try:
+                amount_value = float(amount)
+                break
+            except ValueError:
+                print("Please enter a valid number for amount.")
         description = input("Description: ").strip()
         category = input("Category: ").strip()
         sub_category = input("Sub Category: ").strip()
@@ -39,7 +46,7 @@ def add_expense():
             description, amount, category, subCategory, date, month, year)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (description, float(amount), category, sub_category, expense_date, ex_month, ex_year)
+            (description, amount_value, category, sub_category, expense_date, ex_month, ex_year)
         )
         conn.commit()
         conn.close()
@@ -54,7 +61,7 @@ def delete_expense(args):
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT * FROM expenses WHERE id = ?)
+        SELECT * FROM expenses WHERE id = ?
         """,
         (args.id,))
     expense = cursor.fetchone()

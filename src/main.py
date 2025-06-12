@@ -9,6 +9,7 @@ import sys
 
 # internal imports
 import ops
+import stats
 import user_input as ui
 from db_handler import download_db_from_github, upload_db_to_github
 
@@ -33,7 +34,7 @@ def main():
     elif args.command == "view":
         ops.view_expenses()
     elif args.command == "stats":
-        ops.generate_statistics(args)
+        stats.get_expense_sum()
 
 
 if __name__ == "__main__":
