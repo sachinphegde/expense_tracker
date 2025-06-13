@@ -35,6 +35,7 @@ def main():
         ops.view_expenses()
     elif args.command == "stats":
         stats.get_expense_sum()
+        stats.get_expense_sum_by_category()
 
 
 if __name__ == "__main__":
