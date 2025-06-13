@@ -28,3 +28,19 @@ def get_expense_sum():
         print(f"Total expenses: {total_sum:.2f}")
     else:
         print("Total expenses: 0.00")
+
+
+def get_expense_sum_by_category():
+    """
+    Calculates the total sum of expenses for each category in the database.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT category, SUM(amount) FROM expenses GROUP BY category")
+    results = cursor.fetchall()
+    conn.close()
+    if results:
+        for category, total in results:
+            print(f"{category}: {total:.2f}")
+    else:
+        print("No expenses found.")
