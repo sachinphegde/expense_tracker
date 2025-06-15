@@ -7,7 +7,7 @@ import datetime
 import calendar
 
 # internal imports
-from config import DB_PATH
+from config import DB_LOCAL_PATH
 
 
 def add_expense():
@@ -38,7 +38,7 @@ def add_expense():
         if not amount or not category:
             print("Amount and category are required.")
             continue
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(DB_LOCAL_PATH)
         cursor = conn.cursor()
         cursor.execute(
             """
@@ -57,7 +57,7 @@ def delete_expense(args):
     """
     Deletes an expense from the database.
     """
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_LOCAL_PATH)
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -82,7 +82,7 @@ def view_expenses():
     """
     Reads the expenses table from the SQLite database and prints it as a table in the CLI.
     """
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_LOCAL_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT id, amount, category, date, description, month, year FROM expenses")
     rows = cursor.fetchall()

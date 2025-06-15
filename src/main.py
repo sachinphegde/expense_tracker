@@ -5,37 +5,47 @@ Expense Tracker Application
 A command-line application to track expenses, view them, and generate statistics.
 """
 
-import sys
+# import logging
 
 # internal imports
 import ops
 import stats
 import user_input as ui
-from db_handler import download_db_from_github, upload_db_to_github
+from github import download_from_github, upload_to_github
+from config import DB_LOCAL_PATH
+import db_handler
 
 
 def main():
     """
     Main function to run the spend tracker application.
     """
-    download_db_from_github()
+    download_from_github("db")
+    db_handler.create_table(DB_LOCAL_PATH)
+    while True:
+        print("\nExpense Tracker - Choose an option:")
+        print("1. Add expense")
+        print("2. Delete expense")
+        print("3. View expenses")
+        print("4. View statistics")
+        print("5. Exit")
+        choice = input("Enter your choice (1-5): \n").strip()
 
-    try:
-        args = ui.get_user_args()
-    except SystemExit as error:
-        sys.exit(error.code)
-
-    if args.command == "add":
-        ops.add_expense()
-        upload_db_to_github()
-    elif args.command == "delete":
-        ops.delete_expense(args)
-        upload_db_to_github()
-    elif args.command == "view":
-        ops.view_expenses()
-    elif args.command == "stats":
-        stats.get_expense_sum()
-        stats.get_expense_sum_by_category()
+        if choice == "1":
+            ops.add_expense()
+            upload_to_github("db")
+        elif choice == "2":
+            ops.delete_expense(None)  # Adjust as needed
+            upload_to_github("db")
+        elif choice == "3":
+            ops.view_expenses()
+        elif choice == "4":
+            stats.generate_monthly_summary("June", 2025)
+        elif choice == "5":
+            print("Exiting Expense Tracker. Goodbye!")
+            break
+        else:
+            print("Invalid option. Please try again.")
 
 
 if __name__ == "__main__":

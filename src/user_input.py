@@ -21,7 +21,7 @@ def get_user_args():
     # view_expenses
     subparsers.add_parser('view', help='View all expenses')
 
-    #stats
+    # stats
     subparsers.add_parser('stats', help='Get total expenses')
 
     args = parser.parse_args()
