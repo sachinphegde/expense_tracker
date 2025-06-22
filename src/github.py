@@ -37,7 +37,7 @@ def download_from_github(file_type):
     """
     url, path = get_file_name(file_type)
 
-    os.makedirs(os.path.dirname(url), exist_ok=True)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
 
     headers = {"Authorization": f"token {GITHUB_TOKEN}"}
     r = requests.get(url, headers=headers, timeout=10)
