@@ -35,7 +35,7 @@ def main():
             ops.add_expense()
             upload_to_github("db")
         elif choice == "2":
-            ops.delete_expense(None)  # Adjust as needed
+            ops.delete_expense()
             upload_to_github("db")
         elif choice == "3":
             ops.view_expenses()

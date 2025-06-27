@@ -53,24 +53,28 @@ def add_expense():
         print("Expsense added.\n")
 
 
-def delete_expense(args):
+def delete_expense():
     """
     Deletes an expense from the database.
     """
+    data_to_delete = input("Enter the ID of the expense to delete or 'q' to quit: ").strip()
+    if data_to_delete.lower() == 'q':
+        print("Exiting expense deletion.")
+        return
     conn = sqlite3.connect(DB_LOCAL_PATH)
     cursor = conn.cursor()
     cursor.execute(
         """
         SELECT * FROM expenses WHERE id = ?
         """,
-        (args.id,))
+        (data_to_delete,))
     expense = cursor.fetchone()
     print(f"ID: {expense[0]}, Description: {expense[1]}, Amount: {expense[2]}, Category: {expense[3]}, SubCategory: {expense[4]}, Date: {expense[5]}")
     if expense:
         print(f"Deleting expense: {expense}")
         cursor.execute("""
                 DELETE FROM expenses where id = ?
-                """, (args.id,))
+                """, (data_to_delete,))
         print("Expense deleted.")
     else:
         print("Expense not found.")
